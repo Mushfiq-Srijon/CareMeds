@@ -64,6 +64,8 @@ The system aims to reduce the difficulty of searching for medicines physically a
 
 ## UI Design
 
+##FIGMA Design link - https://www.figma.com/make/ObVKtTEbUS4QDOJ2wc4wJd/PharmaTrack-Web-Application-UI?p=f&t=jFXLXi9uMLL59jmO-0
+
 ### Home Page
 ![Home](images/home.png)  
 ![Home](images/home2.png)
