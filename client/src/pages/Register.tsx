@@ -33,7 +33,7 @@ function Register() {
       if (response.ok) {
         alert("Registration Success");
         console.log("Success:", data);
-        navigate("/login"); // Redirect to login
+        navigate("/login");
       } else {
         alert("Registration Failed: " + (data.message || "Invalid input or already registered"));
       }
