@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ApiClient from "../api";
 import { Table, Spinner, Button, InputGroup, FormControl } from "react-bootstrap";
 import toast from "react-hot-toast";
+import "../styles/Cart.css";
 
 const apiClient = new ApiClient();
 
@@ -80,7 +81,7 @@ export default function Cart() {
 
       {cartItems.length > 0 && (
         <>
-          <Table striped bordered hover>
+          <Table responsive striped bordered hover className="cart-table">
             <thead>
               <tr>
                 <th>Medicine</th>
@@ -94,10 +95,10 @@ export default function Cart() {
             <tbody>
               {cartItems.map(item => (
                 <tr key={item.cart_id}>
-                  <td>{item.name}</td>
-                  <td>{item.company}</td>
-                  <td>{item.price}</td>
-                  <td>
+                  <td data-label="Medicine">{item.name}</td>
+                  <td data-label="Company">{item.company}</td>
+                  <td data-label="Price">{item.price}</td>
+                  <td data-label="Quantity">
                     <InputGroup>
                       <Button
                         variant="outline-secondary"
@@ -120,8 +121,8 @@ export default function Cart() {
                       </Button>
                     </InputGroup>
                   </td>
-                  <td>{item.price * item.quantity}</td>
-                  <td>
+                  <td data-label="Total">{item.price * item.quantity}</td>
+                  <td data-label="Actions">
                     <Button
                       variant="danger"
                       size="sm"
@@ -136,7 +137,7 @@ export default function Cart() {
             </tbody>
           </Table>
 
-          <div className="text-end mt-3">
+          <div className="text-end mt-3 cart-checkout-wrapper">
             <Button variant="success" onClick={checkout}>
               Checkout
             </Button>
