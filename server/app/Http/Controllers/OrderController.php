@@ -13,15 +13,15 @@ class OrderController extends Controller
     {
         // Validate incoming request
         $request->validate([
-            'pharmacy_id' => 'required',                     
+            'pharmacy_id' => 'required',
             'delivery_type' => 'required|in:home_delivery,pickup',
-            'items' => 'required|array'                     
+            'items' => 'required|array'
         ]);
 
         // Set delivery charge
         $deliveryCharge = 0;
         if ($request->delivery_type == 'home_delivery') {
-            $deliveryCharge = 50; 
+            $deliveryCharge = 50;
         }
 
         //  Calculate total price
@@ -45,14 +45,14 @@ class OrderController extends Controller
 
         // Pick a rider for this order
         $rider = DB::select("SELECT * FROM riders ORDER BY RAND() LIMIT 1");
-        $riderId = $rider ? $rider[0]->id : null; 
+        $riderId = $rider ? $rider[0]->id : null;
 
         // Insert the order into 'orders' table
         DB::insert(
             "INSERT INTO orders (user_id, pharmacy_id, delivery_type, delivery_charge, total_price, rider_id)
              VALUES (?, ?, ?, ?, ?, ?)",
             [
-                Auth::id(),                
+                Auth::id(),
                 $request->pharmacy_id,
                 $request->delivery_type,
                 $deliveryCharge,
@@ -65,39 +65,39 @@ class OrderController extends Controller
         $orderId = DB::getPdo()->lastInsertId();
 
         // Insert each ordered medicine into 'order_items' table
-       foreach ($request->items as $item) {
+        foreach ($request->items as $item) {
 
-    // Check available stock to prevent negative stock
-    $availableStock = DB::table('medicines')->where('id', $item['medicine_id'])->value('stock');
-    if ($item['quantity'] > $availableStock) {
-        return response()->json([
-            'success' => false,
-            'message' => "Not enough stock for medicine id " . $item['medicine_id']
-        ], 400);
-    }
+            // Check available stock to prevent negative stock
+            $availableStock = DB::table('medicines')->where('id', $item['medicine_id'])->value('stock');
+            if ($item['quantity'] > $availableStock) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Not enough stock for medicine id " . $item['medicine_id']
+                ], 400);
+            }
 
-    //  Get medicine price
-    $medicine = DB::select("SELECT * FROM medicines WHERE id = ?", [$item['medicine_id']]);
-    $price = $medicine[0]->price;
+            //  Get medicine price
+            $medicine = DB::select("SELECT * FROM medicines WHERE id = ?", [$item['medicine_id']]);
+            $price = $medicine[0]->price;
 
-    // Insert into order_items
-    DB::insert(
-        "INSERT INTO order_items (order_id, medicine_id, quantity, price)
+            // Insert into order_items
+            DB::insert(
+                "INSERT INTO order_items (order_id, medicine_id, quantity, price)
          VALUES (?, ?, ?, ?)",
-        [
-            $orderId,
-            $item['medicine_id'],
-            $item['quantity'],
-            $price
-        ]
-    );
+                [
+                    $orderId,
+                    $item['medicine_id'],
+                    $item['quantity'],
+                    $price
+                ]
+            );
 
-    // Reduce stock
-    DB::statement(
-        "UPDATE medicines SET stock = stock - ? WHERE id = ?",
-        [$item['quantity'], $item['medicine_id']]
-    );
-}
+            // Reduce stock
+            DB::statement(
+                "UPDATE medicines SET stock = stock - ? WHERE id = ?",
+                [$item['quantity'], $item['medicine_id']]
+            );
+        }
 
         // Return success response
         return response()->json([

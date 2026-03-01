@@ -21,7 +21,6 @@ function Login() {
         // Save token in localStorage
         localStorage.setItem("auth_token", data.token);
 
-        // Optional: save user info
         if (data.user) {
           localStorage.setItem("user_name", data.user.name);
           localStorage.setItem("user_id", data.user.id);
