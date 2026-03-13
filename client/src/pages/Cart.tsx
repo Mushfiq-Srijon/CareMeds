@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ApiClient from "../api";
 import { Spinner } from "react-bootstrap";
 import toast from "react-hot-toast";
@@ -19,6 +20,7 @@ export default function Cart() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   const fetchCart = async () => {
     setLoading(true);
@@ -41,11 +43,7 @@ export default function Cart() {
     try {
       await apiClient.updateCart(cartId, quantity);
       toast.success("Quantity updated");
-      setCartItems(prev =>
-        prev.map(item =>
-          item.cart_id === cartId ? { ...item, quantity } : item
-        )
-      );
+      fetchCart();
     } catch {
       toast.error("Failed to update quantity");
     }
@@ -57,7 +55,7 @@ export default function Cart() {
     try {
       await apiClient.removeCartItem(cartId);
       toast.success("Item removed");
-      setCartItems(prev => prev.filter(item => item.cart_id !== cartId));
+      fetchCart();
     } catch {
       toast.error("Failed to remove item");
     }
@@ -67,6 +65,7 @@ export default function Cart() {
   const checkout = () => {
     if (cartItems.length === 0) return toast.error("Cart is empty");
     toast.success("Proceeding to checkout...");
+    navigate("/checkout");
   };
 
   const grandTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -157,7 +156,7 @@ export default function Cart() {
               </div>
               <button className="checkout-btn" onClick={checkout}>
                 <svg fill="none" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                  <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
                 Proceed to Checkout
               </button>
