@@ -21,6 +21,7 @@ function Login() {
         // Save token in localStorage
         localStorage.setItem("auth_token", data.token);
 
+        // Optional: save user info
         if (data.user) {
           localStorage.setItem("user_name", data.user.name);
           localStorage.setItem("user_id", data.user.id);
@@ -95,6 +96,11 @@ function Login() {
           Don't have an account?{" "}
           <Link to="/register" style={styles.signupLink}>
             Sign Up
+          </Link>
+        </p>
+        <p style={styles.signupText}>
+          <Link to="/forgot-password" style={styles.signupLink}>
+            Forgot Password?
           </Link>
         </p>
       </div>
